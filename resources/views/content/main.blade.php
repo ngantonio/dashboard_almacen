@@ -16,7 +16,7 @@
     </template>
     
     <template v-if="menu==2">
-        <h1>El menu ha cambiado a la opcion 2</h1>
+        <articles></articles>
     </template>
 
     <template v-if="menu==3">

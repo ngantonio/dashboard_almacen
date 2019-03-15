@@ -17,12 +17,15 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('category', require('./components/Category.vue'));
+Vue.component('articles', require('./components/Article.vue'));
 
 const app = new Vue({
     //App es un identificador
     //data es una propiedad
     el: '#app',
     data: {
+        // permitirá controlar que vista se debe de mostrar
+        // para cada opcion que se seleccione del sidebar
         menu : 0
     }
 });
