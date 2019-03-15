@@ -8,11 +8,11 @@
 
     <!--indica que la primera opcion del menu, debe msotrar este componente -->
     <template v-if="menu==0">   
-         <example-component></example-component>
+        <h1>El menu ha cambiado a la opcion 0, escritorio</h1>
     </template>
 
     <template v-if="menu==1">
-        <h1>El menu ha cambiado a la opcion 1</h1>
+        <category></category>
     </template>
     
     <template v-if="menu==2">

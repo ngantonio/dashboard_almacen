@@ -16,6 +16,7 @@ window.Vue = require('vue');
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('category', require('./components/Category.vue'));
 
 const app = new Vue({
     //App es un identificador

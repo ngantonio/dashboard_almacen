@@ -96,7 +96,7 @@
         <span class="ml-auto"> Desarrollado por Gabriel Antonio, con plantilla <a href="https://coreui.io/">CoreUI</a> &copy; 2019</span>
     </footer>
 
-    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <!-- plugin vue.js -->
     <script src="js/app.js"></script>
     <!-- Bootstrap and necessary plugins -->
