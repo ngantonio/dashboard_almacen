@@ -31,3 +31,17 @@ Route::put('/article/update', 'ArticleController@update');
 Route::put('/article/disable', 'ArticleController@changeStatus');
 Route::put('/article/enable', 'ArticleController@changeStatus');
 
+// Personas (Clientes)
+
+Route::get('/client', 'ClientController@index');
+Route::post('/client/new', 'ClientController@store');
+Route::put('/client/update', 'ClientController@update');
+
+// Personas (Proveedores)
+
+Route::get('/provider', 'ProviderController@index');
+Route::post('/provider/new', 'ProviderController@store');
+Route::put('/provider/update', 'ClientController@update');
+
+// Roles
+Route::get('/role', 'RoleController@index');

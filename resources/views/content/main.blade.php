@@ -24,7 +24,7 @@
     </template>
 
     <template v-if="menu==4">
-        <h1>El menu ha cambiado a la opcion 4</h1>
+        <providers></providers>
     </template>
 
     <template v-if="menu==5">
@@ -32,15 +32,15 @@
     </template>
 
     <template v-if="menu==6">
-        <h1>El menu ha cambiado a la opcion 6</h1>
+        <clients></clients>
     </template>
 
     <template v-if="menu==7">
-        <h1>El menu ha cambiado a la opcion 7</h1>
+        
     </template>
 
     <template v-if="menu==8">
-        <h1>El menu ha cambiado a la opcion 8</h1>
+       <roles></roles>
     </template>
 
     <template v-if="menu==9">
