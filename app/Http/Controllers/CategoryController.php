@@ -32,9 +32,9 @@ class CategoryController extends Controller
             de cualquier registro de la columna del criterio (nombre o descripcion) 
         */
         if($text_search == '')
-            $categories = Category::paginate(3);
+            $categories = Category::paginate(6);
         else 
-            $categories = Category::where($search_criteria, 'like', '%'. $text_search . '%')->paginate(3);
+            $categories = Category::where($search_criteria, 'like', '%'. $text_search . '%')->paginate(6);
         
         # retornamos un array con los metodos necesarios
         # para controlar la paginacion
@@ -106,5 +106,18 @@ class CategoryController extends Controller
         $cat                = Category::findOrFail($request->id);
         $cat->active        = false;
         $cat->save(); 
+    }
+
+    # Regresa todas las categorias activas
+    public function activeCategories(Request $request){
+        
+        if(!$request->ajax()) 
+            return redirect('/');
+
+        $categories = Category::where('active','=','1')
+            ->select('id','name')
+            ->orderBy('name','asc')->get();
+        
+        return ['categories' => $categories]; 
     }
 }

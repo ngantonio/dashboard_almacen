@@ -139,15 +139,51 @@
                             <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                 <div class="col-md-9">
-                                    <input v-model="name" type="text" class="form-control" placeholder="Nombre de categoría">
+                                    <input v-model="name" type="text" class="form-control" placeholder="Nombre">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                                 <div class="col-md-9">
-                                    <input v-model="description" type="text" class="form-control" placeholder="Escribe una descripcion breve para esta categoria...">
+                                    <input v-model="description" type="text" class="form-control" placeholder="Escribe una descripcion breve...">
                                 </div>
                             </div>
+
+                            <!--seleccionar categoria -->
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Categoria</label>
+                                <div class="col-md-9">
+                                  <select v-model="category_id" class="form-control">
+                                      <option value="0" disabled selected> Seleccione</option>
+                                      <option v-for="category in arrayCategories" :key="category.id" :value="category.id" v-text="category.name"></option>
+                                  </select>
+                                </div>
+                            </div>
+                            <!-- codigo -->
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Codigo</label>
+                                <div class="col-md-9">
+                                    <input v-model="code" type="text" class="form-control" placeholder="Codigo de identificación">
+                                    <barcode :value="code" :options="{format:'EAN-13'}"> 
+                                      Generando...
+                                    </barcode> 
+                                </div>
+                            </div>
+                            <!-- stock -->
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">N° stock</label>
+                                <div class="col-md-9">
+                                    <input v-model="stock" type="text" class="form-control" placeholder="N° stock">
+                                </div>
+                            </div>
+                            <!-- precio de venta -->
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label" for="email-input">Precio de Venta</label>
+                                <div class="col-md-9">
+                                    <input v-model="sale_price" type="number" class="form-control">
+                                </div>
+                            </div>
+
                             
                             <!-- mensajes de error -->
                             <div v-show="errorDetection" class="form-group row div-error">    
@@ -175,6 +211,8 @@
 </template>
 
 <script>
+
+    import VueBarcode from 'vue-barcode';
     export default {
       data(){
         return {
@@ -215,7 +253,13 @@
           // criterio inicial de busqueda
           search_criteria: 'Nombre',
           text_search : '',
+
+          //listado de categorias para seleccionar
+          arrayCategories :[],
         }
+      },
+      components: {
+        'barcode': VueBarcode
       },
       computed:{  // propiedad computada para obtener la pagina actual 
         isActived : function(){
@@ -266,10 +310,23 @@
               //almacenamos el objeto de la respuesta (la consula a la bd)
               let respuesta = response.data;
               me.arrayArticles = respuesta.articles.data;
-              console.log(respuesta.articles.data);
-              // llenamos el array de pagination de vue, 
-              //con el array de pagination de laravel
               me.pagination = respuesta.pagination;
+            })
+            .catch(function (error) {
+              // handle error
+              console.log(error.response);
+            });
+        },
+
+        listarCategorias(){
+          
+          let me=this;
+         
+          axios.get('category/active')
+            .then(function (response) {
+              //almacenamos el objeto de la respuesta (la consula a la bd)
+              let respuesta = response.data;
+              me.arrayCategories = respuesta.categories;
             })
             .catch(function (error) {
               // handle error
@@ -280,42 +337,58 @@
         registrar(){
           let me=this;
 
-          if(this.validar()){
+          if(this.validar())
             return;
-          }
 
           axios.post('/article/new',{
-            'name': this.name,
-            'description': this.description
+            'name'         : this.name,
+            'description'  : this.description,
+            'category_id'  : this.category_id,
+            'code'         : this.code,
+            'stock'        : this.stock,
+            'sale_price'   : this.sale_price,
             }).then(function (response) {
               me.cerrarModal();
               me.listar(1,'','nombre');
             }).catch(function (error) {
-              console.log(error);
+              console.log(error.response);
             });
         },
         //la accion va a tener dos posible valores, registrar o actualizar
         abrirModal(accion, data = []){
-
+          
+          this.listarCategorias();
           switch(accion){
 
             case "register":
+
               this.modal = 1;
-              this.name = '';
-              this.description = '';
               this.modalTitle = "Nuevo articulo";
               this.tipoModal = "1";
+
+              this.name = '';
+              this.description  = '';
+              this.category_id  =  '';
+              this.code         =  '';
+              this.category_name=  '';
+              this.stock        =  0;
+              this.sale_price   =  0.0;
+              this.article_id   =  0;
             break;
             
-    
             case "update":
+
               this.modal      = 1;
-              this.modalTitle = "Actualizar "+ data['name'];
+              this.modalTitle = "Actualizando "+ data['name'];
               this.tipoModal  = "2";   
 
               this.name        = data['name'];
               this.description = data['description'];
-              this.category_id = data['id'];
+              this.category_id  = data['category_id'];
+              this.code         = data['code'];
+              this.stock        = data['stock'];
+              this.sale_price   = data['sale_price'];
+              this.article_id   = data['id'];
             break;        
           }
         
@@ -324,20 +397,31 @@
         cerrarModal(){
           this.modal = 0;
           this.modalTitle = "";
-          this.name = "";
-          this.description = "";
+
+          this.name = '';
+          this.description  = '';
+          this.category_id  =  '';
+          this.code         =  '';
+          this.category_name=  '';
+          this.stock        =  0;
+          this.sale_price   =  0.0;
+          this.article_id   =  0;
         },
 
         validar(){
           this.errorDetection = 0;
           this.errorMessages = [];
 
-          // si el nombre de la categoria es vacio
-          if(!this.name) this.errorMessages.push("El nombre no puede estar vacio");    
-          // si existe un mensaje de error, la variable se activa
-          if(this.errorMessages.length) this.errorCategoryDetection = 1;
+          // si el nombre del producto es vacio
+          if(!this.name) this.errorMessages.push("El nombre no puede estar vacio");          
+          if(this.category_id == 0) this.errorMessages.push("Debes seleccionar una categoria");    
+          if(!this.stock) this.errorMessages.push("El stock del articulo debe ser un numero y no puede estar vacio");    
+          if(!this.sale_price) this.errorMessages.push("El precio del articulo debe ser un numero y no puede estar vacio");    
           
-          return this.errorCategoryDetection;
+          // si existe un mensaje de error, la variable se activa 
+          if(this.errorMessages.length) this.errorDetection = true;   
+          
+          return this.errorDetection;
         },
 
         actualizar(){
@@ -348,14 +432,18 @@
             return;
       
           axios.put('/article/update',{
-            'name': this.name,
-            'description': this.description,
-            'id': this.category_id
+            'name'         : this.name,
+            'description'  : this.description,
+            'category_id'  : this.category_id,
+            'code'         : this.code,
+            'stock'        : this.stock,
+            'sale_price'   : this.sale_price,
+            'id'           : this.article_id
             }).then(function (response) {
               me.cerrarModal();
               me.listar(1,'','nombre');
             }).catch(function (error) {
-              console.log(error);
+              console.log(error.response);
             });
         },
 
@@ -420,7 +508,6 @@
           me.pagination.current_page = pageNumber;
           me.listar(pageNumber, text, criteria); 
         }
-
       },
       mounted() {
         // hacemos referencia a los metodos definidos arriba

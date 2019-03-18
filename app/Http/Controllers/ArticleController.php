@@ -25,12 +25,12 @@ class ArticleController extends Controller
         if($text_search == '')
             $articles = Article::join('categories','articles.category_id', '=', 'categories.id')
                 ->select('articles.id','articles.category_id', 'articles.code','articles.name','articles.sale_price','articles.description', 'articles.stock', 'articles.active', 'categories.name as category_name')
-                ->paginate(3);
+                ->paginate(6);
         else 
             $articles = Article::join('categories','articles.category_id', '=', 'categories.id')
                 ->select('articles.id','articles.category_id', 'articles.code','articles.name','articles.sale_price','articles.description', 'articles.stock', 'articles.active', 'categories.name as category_name')
                 ->where('articles.'.$search_criteria, 'like', '%'. $text_search . '%')
-                ->paginate(3);
+                ->paginate(6);
 
         
         # retornamos un array con los metodos necesarios
@@ -67,7 +67,7 @@ class ArticleController extends Controller
         $article->code          = $request->code;
         $article->sale_price    = $request->sale_price;
         $article->stock         = $request->stock;
-        $article->id_category   = $request->id_category;
+        $article->category_id   = $request->category_id;
         $article->active        = true;
 
         $article->save(); 
@@ -80,17 +80,17 @@ class ArticleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id){
+    public function update(Request $request){
         if(!$request->ajax()) 
             return redirect('/');
 
-        $article                = new Article();
+        $article                = Article::findOrFail($request->id);
         $article->name          = $request->name;
         $article->description   = $request->description;
         $article->code          = $request->code;
         $article->sale_price    = $request->sale_price;
         $article->stock         = $request->stock;
-        $article->id_category   = $request->id_category;
+        $article->category_id   = $request->category_id;
      
         $article->save(); 
     }

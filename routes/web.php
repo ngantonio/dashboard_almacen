@@ -21,8 +21,10 @@ Route::post('/category/new', 'CategoryController@store');
 Route::put('/category/update', 'CategoryController@update');
 Route::put('/category/disable', 'CategoryController@desactivar');
 Route::put('/category/enable', 'CategoryController@activar');
+Route::get('/category/active', 'CategoryController@activeCategories');
 
 //Articulos
+
 Route::get('/article', 'ArticleController@index');
 Route::post('/article/new', 'ArticleController@store');
 Route::put('/article/update', 'ArticleController@update');
