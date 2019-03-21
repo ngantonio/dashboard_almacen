@@ -38,6 +38,11 @@ class RoleController extends Controller
         ];
     }
 
-    
+    public function selectRole(Request $request){
+        $roles = Role::where('active','=','1')
+            ->select('id','rolename')
+            ->orderBy('rolename','ASC')->get();
+        return ['roles' => $roles];
+    }
 
 }

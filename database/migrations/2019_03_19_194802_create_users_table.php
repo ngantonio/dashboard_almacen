@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
            
             # El id de un user es el id de un registro de la tabla person
             $table->integer('id')->unsigned();
-            $table->foreign('id')->references('id')->on('person')->onDelete('cascade');
+            $table->foreign('id')->references('id')->on('persons')->onDelete('cascade');
 
             $table->string('username')->unique();
             $table->string('password');

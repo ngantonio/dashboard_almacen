@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Provider;
+use App\User;
 
 class Person extends Model
 {
@@ -11,8 +12,13 @@ class Person extends Model
     protected $table = 'persons';
     protected $fillable = ['name','document_type','document_number','address','phone_number','email'];
 
-    person provider(){
+    public function provider(){
         //un solo proveedor
-        return $this->hasOne(Porvider::class);
+        return $this->hasOne(Provider::class);
     }
+
+    public function user(){
+        return $this->hasOne(User::class);
+    }
+
 }

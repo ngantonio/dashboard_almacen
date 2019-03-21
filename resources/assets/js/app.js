@@ -21,6 +21,7 @@ Vue.component('articles', require('./components/Article.vue'));
 Vue.component('clients', require('./components/Client.vue'));
 Vue.component('providers', require('./components/Provider.vue'));
 Vue.component('roles', require('./components/Role.vue'));
+Vue.component('users', require('./components/User.vue'));
 
 const app = new Vue({
     //App es un identificador

@@ -17,12 +17,12 @@ class CreatePersonsTable extends Migration
         Schema::create('persons', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string("document_type",20)->nullable();
-            $table->string('document_number')->nullable();  //dni, CI, passport
+            $table->string('document_number')->unique();  //dni, CI, passport
             $table->string('address')->nullable();
             $table->string('phone_number')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             
             $table->timestamps();
         });

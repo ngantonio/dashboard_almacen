@@ -8,7 +8,7 @@
 
     <!--indica que la primera opcion del menu, debe msotrar este componente -->
     <template v-if="menu==0">   
-        <h1>El menu ha cambiado a la opcion 0, escritorio</h1>
+        <h1>Componente escritorio</h1>
     </template>
 
     <template v-if="menu==1">
@@ -20,7 +20,7 @@
     </template>
 
     <template v-if="menu==3">
-        <h1>El menu ha cambiado a la opcion 3</h1>
+        <h1>Ingresos</h1>
     </template>
 
     <template v-if="menu==4">
@@ -28,7 +28,7 @@
     </template>
 
     <template v-if="menu==5">
-        <h1>El menu ha cambiado a la opcion 5</h1>
+        <h1>ventas</h1>
     </template>
 
     <template v-if="menu==6">
@@ -36,7 +36,7 @@
     </template>
 
     <template v-if="menu==7">
-        
+        <users></users>
     </template>
 
     <template v-if="menu==8">
@@ -44,20 +44,18 @@
     </template>
 
     <template v-if="menu==9">
-        <h1>El menu ha cambiado a la opcion 9</h1>
+        <h1>Reporte de ingresos</h1>
     </template>
 
     <template v-if="menu==10">
-        <h1>El menu ha cambiado a la opcion 10</h1>
+        <h1>Reporte de ventas</h1>
     </template>
 
     <template v-if="menu==11">
-        <h1>El menu ha cambiado a la opcion 11</h1>
+        <h1>Ayuda</h1>
     </template>
 
     <template v-if="menu==12">
-        <h1>El menu ha cambiado a la opcion 12</h1>
+        <h1>Acerca de</h1>
     </template>
-
-
 @endsection

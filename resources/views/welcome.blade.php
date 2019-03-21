@@ -64,14 +64,19 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                         <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
-                        <span class="d-md-down-none">admin </span>
+                        <span class="d-md-down-none"> {{ Auth::user()->username }} </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-header text-center">
                             <strong>Cuenta</strong>
                         </div>
-                        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Perfil</a>
-                        <a class="dropdown-item" href="#"><i class="fa fa-lock"></i> Cerrar sesión</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}" 
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fa fa-lock"></i> Cerrar sesión</a>
+                            <!-- el estilo es para que no sea visible -->
+                            <form id="logout-form" action="{{ route('logout') }}" method="post" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
                     </div>
                 </li>
             </ul>
@@ -79,10 +84,20 @@
         <!--end navbar -->
 
         <div class="app-body">
-
-            <!-- sidebar -->
-            @include('content.sidebar')
-            <!-- End sidebar -->
+            <!-- auth()->user()-->
+            @auth
+                <!-- si es un administrador -->
+                @if(Auth::user()->id_role == 1)
+                    <!-- sidebar -->
+                    @include('content.sidebar_admin')
+                    <!-- End sidebar -->
+                @elseif(Auth::user()->id_role == 2)
+                    <!-- si es un vendedor -->
+                    @include('content.sidebar_seller')
+                @else
+                    @include('content.sidebar_ware')
+                @endif
+            @endauth
 
             <!-- Principal Content -->
             @yield('main_content')
