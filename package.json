@@ -20,6 +20,7 @@
         "vue-resource": "^1.5.1"
     },
     "dependencies": {
-        "vue-barcode": "^1.2.0"
+        "vue-barcode": "^1.2.0",
+        "vue-select": "^3.1.0"
     }
 }

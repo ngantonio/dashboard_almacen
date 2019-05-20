@@ -121,6 +121,20 @@ Route::group(['middleware'=>['auth']],function(){
         Route::put('/users/disable', 'UserController@changeStatus');
         Route::put('/users/enable', 'UserController@changeStatus');
     
+        # Ingresos (para almacenero tambien)
+        Route::get('/incomes', 'IncomeController@index');
+        Route::post('/incomes/store', 'IncomeController@store');
+        Route::put('/incomes/disable', 'IncomeController@changeStatus');
+        Route::get('/incomes/getHeader', 'IncomeController@getHeader');
+        Route::get('/incomes/getDetailsIncome', 'IncomeController@getDetailsIncome');
+
+        #Agregar esta ruta a todas las coincidencias donde aparezca Proveedor
+        Route::get('/provider/getProviders', 'ProviderController@getProviders');
+
+        #Agregar esta ruta en la parte de Articulos
+        Route::get('/article/searchArticle', 'ArticleController@searchArticle');
+
+
     });
 
 });

@@ -28,7 +28,7 @@
                           <select v-model="search_criteria" class="form-control col-md-3">
                               <option value="Nombre">Nombre</option>
                               <option value="Descripcion">Identificador</option>
-                              <option value="Descripcion">Email</option>
+                              <option value="email">Email</option>
                           </select>
                           <!-- 
                           - cuando una directiva comienza con @, es la forma simplificada de escribir
@@ -99,6 +99,7 @@
             </div>
             <!-- Fin ejemplo de tabla Listado -->
         </div>
+        <!--end container -->
 
         <!--Inicio del modal agregar/actualizar, quitamos el atributo id, para poder trabajar con vue-->
         <!-- :class="{'mostrar':modal}", quiere decir que se anexara la clase mostrar, si la propiedad modal esta en 1 -->

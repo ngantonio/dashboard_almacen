@@ -25,12 +25,12 @@ class ArticleController extends Controller
         if($text_search == '')
             $articles = Article::join('categories','articles.category_id', '=', 'categories.id')
                 ->select('articles.id','articles.category_id', 'articles.code','articles.name','articles.sale_price','articles.description', 'articles.stock', 'articles.active', 'categories.name as category_name')
-                ->paginate(6);
+                ->paginate(10);
         else 
             $articles = Article::join('categories','articles.category_id', '=', 'categories.id')
                 ->select('articles.id','articles.category_id', 'articles.code','articles.name','articles.sale_price','articles.description', 'articles.stock', 'articles.active', 'categories.name as category_name')
                 ->where('articles.'.$search_criteria, 'like', '%'. $text_search . '%')
-                ->paginate(6);
+                ->paginate(10);
 
         
         # retornamos un array con los metodos necesarios
@@ -110,4 +110,22 @@ class ArticleController extends Controller
        
         $article->save(); 
     }
+
+    public function searchArticle(Request $request){
+
+        if(!$request->ajax()) 
+            return redirect('/');
+
+        $filter = $request->filter; // codigo de barras
+
+        $article = Article::where('code','=',$filter)
+        ->select('id','name')
+        ->orderBy('name','asc')->take(1)->get();
+
+        return ['article' => $article];
+
+    }
+
+    
 }
+

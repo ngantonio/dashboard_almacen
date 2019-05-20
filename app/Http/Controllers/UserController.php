@@ -15,17 +15,17 @@ class UserController extends Controller
         if(!$request->ajax()) 
             return redirect('/');
  
-         # Variables para las busquedas
-         $text_search     = $request->search;
-         $search_criteria = $request->criteria;
+        # Variables para las busquedas
+        $text_search     = $request->search;
+        $search_criteria = $request->criteria;
  
  
-         if($text_search == '')
+        if($text_search == '')
             $persons = User::join('persons','persons.id', '=','users.id' )
                  ->join('roles','roles.id','=','users.id_role')
                  ->select('*')
                  ->paginate(6);
-         else    
+        else    
             $persons = User::join('persons','persons.id', '=','users.id' )
                 ->join('roles','roles.id','=','users.id_role')
                 ->select('*')                
@@ -33,9 +33,9 @@ class UserController extends Controller
                 ->paginate(6);
  
          
-         # retornamos un array con los metodos necesarios
-         # para controlar la paginacion
-         return [
+        # retornamos un array con los metodos necesarios
+        # para controlar la paginacion
+        return [
              'pagination' => [
                  'total'         =>  $persons->total(),
                  'current_page'  =>  $persons->currentPage(),
@@ -43,11 +43,11 @@ class UserController extends Controller
                  'last_page'     =>  $persons->lastPage(),
                  'from'          =>  $persons->firstItem(),
                  'to'            =>  $persons->lastItem(),
-             ],
+            ],
              'users' => $persons
  
-         ];
-     }
+        ];
+    }
  
      public function store(Request $request){
          

@@ -112,4 +112,31 @@ class ProviderController extends Controller
         }
     }
 
+    /* Obtiene la lista de todos los proveedores necesaria para enviarla mediante ajax
+    a la vista, Income.vue al momento de agregar una nueva venta / ingreso */
+
+    public function getProviders(Request $request){
+        
+        if(!$request->ajax()) 
+            return redirect('/');
+
+        $providers = Provider::join('persons','providers.id','=','persons.id')
+            ->select('persons.id','persons.name','persons.document_number')
+            ->orderBy('persons.name','asc')->get();
+    
+            return ['providers' => $providers];
+        
+        /*
+        En caso de permitir buscar provvedores por filtros: ...
+        
+        $filter =  $request->filter;
+        // proveedores cuyo nombre o CI coincida con el filtro
+        $providers = Provider::join('persons','providers.id','=','persons.id')
+        ->where('persons.name','like','%'. $filter. '%')
+        ->orWhere('persons.document_number', 'like', '%' .$filter. '%')
+        ->select('persons.id','persons.name','persons.document_number')
+        ->orderBy('persons.name','asc')->get();
+
+        return ['providers' => $providers];*/
+    }
 }

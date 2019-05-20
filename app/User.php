@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Person;
 use App\Role;
+use App\Income;
 
 class User extends Authenticatable
 {
@@ -36,4 +37,8 @@ class User extends Authenticatable
     public function person(){
         $this->belongsTo(Person::class);
     }
+
+   /* public function income(){
+        $this->hasOne(Income::class);
+    }*/
 }
