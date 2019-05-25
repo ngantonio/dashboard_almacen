@@ -71,4 +71,21 @@ class ClientController extends Controller
         $person->save();
     }
 
+
+    // Permite obtener un cliente dado su documento de identidad 
+    //desde Sale.vue, al realizar una venta
+    public function getClient(Request $request){
+
+        if(!$request->ajax()) 
+            return redirect('/');
+
+        $doc_number = $request->doc_number;
+
+        $client = Person::where('persons.document_number','=', $doc_number)
+            ->select('persons.id','persons.name','persons.document_number')
+            ->get();
+    
+            return ['client' => $client];
+    }
+
 }

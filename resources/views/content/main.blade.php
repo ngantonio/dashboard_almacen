@@ -8,7 +8,7 @@
 
     <!--indica que la primera opcion del menu, debe msotrar este componente -->
     <template v-if="menu==0">   
-        <h1>Componente escritorio</h1>
+        <dashboard></dashboard>
     </template>
 
     <template v-if="menu==1">
@@ -28,7 +28,7 @@
     </template>
 
     <template v-if="menu==5">
-        <h1>ventas</h1>
+        <sales></sales>
     </template>
 
     <template v-if="menu==6">

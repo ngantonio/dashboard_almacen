@@ -10,15 +10,15 @@ el valor obtenido en esa variable de vue -->
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <i class="fa fa-align-justify"></i> Ingresos &nbsp;            
+                    <i class="fa fa-align-justify"></i> Ventas &nbsp;            
                    <!--boton para agregar un nuevo ingreso, vizualizeDetails() muestra el formulario -->
                     <button @click="visualizeDetails()" type="button" class="btn btn-secondary">
-                        <i class="icon-plus"></i>&nbsp;Nuevo
+                        <i class="icon-plus"></i>&nbsp;Nueva venta
                     </button>
                 </div>
                 
-                <!-- Listado de ingresos -->
-                <template v-if="flag_list_incomes == 1">
+                <!-- Listado de ventas -->
+                <template v-if="flag_list_sales == 1">
                    <!-- si la variable flag_list_incomes es = 1, se visualiza el div del listado -->
                   <div class="card-body">
                       <!-- Formulario de busqueda: por tipo de comprobante,tipo de comprobante y fecha -->
@@ -46,10 +46,10 @@ el valor obtenido en esa variable de vue -->
                                   <th>Opciones</th>
                                   <th>N°</th>
                                   <th>Registrado por</th>
-                                  <th>Proveedor</th>
+                                  <th>Cliente</th>
                                   <th>Tipo comprobante</th>
                                   <th>Serie</th>
-                                  <th>Fecha ingreso</th>
+                                  <th>Fecha venta</th>
                                   <th>Impuesto</th>
                                   <th>Total</th>
                                   <th>Estado</th>
@@ -57,31 +57,35 @@ el valor obtenido en esa variable de vue -->
                           </thead>
                           <tbody>
                             <!-- hacemos un for para iterar por todo el array de Ingresos -->
-                              <tr v-for="income in arrayIncomes" :key="income.id">
+                              <tr v-for="sale in arraySales" :key="sale.id">
                                   <!--Opciones -->
                                   <td>
                                     <!-- enviamos el objeto ingreso de esta fila para visualizar detalladamente, a la funcion viewIncome-->
-                                      <button @click="viewIncome(income.id)" type="button" class="btn btn-success btn-sm">
+                                      <button @click="viewSale(sale.id)" type="button" class="btn btn-success btn-sm">
                                           <i class="icon-eye"></i>
-                                      </button> &nbsp;
+                                      </button>
+                                       <button @click="loadPDF(sale.id)" type="button" class="btn btn-info btn-sm">
+                                          <i class="icon-doc"></i>
+                                      </button>
                                       <!--desactivar/anular ingreso -->
-                                      <template v-if="income.status == 'Registrado'">           
-                                        <button @click="desactivar(income.id)" type="button" class="btn btn-danger btn-sm">
+                                      <template v-if="sale.status == 'Registrado'">           
+                                        <button @click="desactivar(sale.id)" type="button" class="btn btn-danger btn-sm">
                                           <i class="icon-trash"></i>
                                         </button>
                                       </template>
+                                      
                                   </td>
 
-                                  <td v-text="income.id"></td>
-                                  <!-- funcion user() en el modelo income -->
-                                  <td v-text="income.user"></td>
-                                  <td v-text="income.name"></td>  <!--provider -->
-                                  <td v-text="income.ticket_type"></td>
-                                  <td v-text="income.ticket_serie"></td>
-                                  <td v-text="income.date"></td>
-                                  <td v-text="income.tax"></td>
-                                  <td v-text="income.total"></td>
-                                  <td v-text="income.status"></td>
+                                  <td v-text="sale.id"></td>
+                                  <!-- funcion user() en el modelo sale -->
+                                  <td v-text="sale.user"></td>
+                                  <td v-text="sale.name"></td>  <!--provider -->
+                                  <td v-text="sale.ticket_type"></td>
+                                  <td v-text="sale.ticket_serie"></td>
+                                  <td v-text="sale.date"></td>
+                                  <td v-text="sale.tax"></td>
+                                  <td v-text="sale.total"></td>
+                                  <td v-text="sale.status"></td>
                               </tr>
                           </tbody>
                         </table>
@@ -107,29 +111,40 @@ el valor obtenido en esa variable de vue -->
                       <!-- End pagination -->
                   </div>
                 </template>
-                 <!-- End Listado de ingresos -->
+                 <!-- End Listado de ventas -->
 
-                <!-- Detalles de un ingreso -->
-                <!-- Si flag_list_incomes es 0 (al presionar el boton *Nuevo*), se muestra el formulario para agregar un ingreso-->
-                <template v-else-if="flag_list_incomes == 0"> 
+                <!-- Detalles de una venta -->
+                <!-- Si flag_list_sales es 0 (al presionar el boton *Nuevo*), se muestra el formulario para agregar un ingreso-->
+                <template v-else-if="flag_list_sales == 0"> 
                   <div class="card-body">
                     <div class="row form-group border">
-                      <!--seleccionar proveedor -->
+                      <!--seleccionar Cliente -->
                       <div class="col-md-8">
                         <div class="form-group">
-                          <label>Proveedor(*)</label>
-                          <select v-model="provider_id" class="form-control">
-                            <option value="0" disabled selected> Seleccione</option>
-                            <option v-for="provider in arrayProviders" :key="provider.id" :value="provider.id" v-text="provider.name"></option>
-                          </select> 
+                          <label>Cedula Cliente
+                            <span style="color: red;" v-show="client_dni == 0">(*Seleccione)</span>
+                          </label>
+                          <div class="form-inline">
+                            <!-- al presionar enter, se llama a la funcion getClient() la cual buscara y mostrará a un cliente -->
+                            <input type="text" class="form-control" v-model="client_dni" @keyup.enter="selectClient()" placeholder="Documento de identidad">
+                            <!-- este boton despliega un modal que permite buscar, seleccionar y mostrar un articulo-->
+                            <input type="text" readonly class="form-control" v-model="client_name">
+                          </div>
                         </div>
                       </div>
 
-                      <!-- Seleccionar impuesto -->
-                      <div class="col-md-4">
-                        <label>Impuesto</label>
-                        <input type="text" class="form-control" v-model="tax">
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <label>Descuento</label>
+                          <input type="number" value="0" class="form-control" v-model="discount">
+                        </div>
                       </div>
+
+                       <!-- Seleccionar impuesto -->
+                      <div class="col-md-2">
+                        <label>Impuesto(*)</label>
+                        <input type="text" class="form-control" v-model="tax">
+                      </div>   
 
                       <!-- seleccionar tipo de comprobante -->
                       <div class="col-md-4">
@@ -155,11 +170,11 @@ el valor obtenido en esa variable de vue -->
                       <!-- seleccionar numero de comprobante -->
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label>Numero de comprobante</label>
+                          <label>Número de comprobante</label>
                           <input type="text" class="form-control" v-model="ticket_number" placeholder="00xx">
                         </div>  
                       </div>
-                      
+
                       <!-- Visualizacion de Errores -->
                       <div class="col-md-12">
                         <div v-show="errorDetection" class="form-group row div-error">    
@@ -193,7 +208,7 @@ el valor obtenido en esa variable de vue -->
                           <label>Precio
                             <span style="color: red;" v-show="price == 0">(*Seleccione)</span>
                           </label>
-                          <input type="number" step="any" class="form-control" v-model="price">
+                          <input type="number" class="form-control" disabled v-model="price">
                         </div>
                       </div>
 
@@ -206,16 +221,17 @@ el valor obtenido en esa variable de vue -->
                         </div>
                       </div>
 
+               
                       <div class="col-md-2">
                         <div class="form-group">
-                        <button @click="addDetail()" class="btn btn-success form-control btnAgregar"><i class="icon-plus"></i>
-                        Agregar
-                        </button>
+                          <button @click="addDetail()" class="btn btn-success form-control btnAgregar"><i class="icon-plus"></i>
+                          Agregar
+                          </button>
                         </div>
                       </div>
-
+                  
                     </div>
-
+   
                     <!-- Muestra una table con el listado de articulos que han sido agregados 
                     en tiempo real y los totales -->
                     <div class="form-group row border">
@@ -223,10 +239,11 @@ el valor obtenido en esa variable de vue -->
                         <table class="table table-bordered table-striped table-sm">
                           <thead>
                             <th>Opciones</th>
-                            <th>Articulo</th>
-                            <th>Precio</th>
-                            <th>Cantidad</th>
-                            <th>Subtotal</th>
+                            <th class="col-md-4">Articulo</th>
+                            <th class="col-md-2">Precio</th>
+                            <th class="col-md-2">Cantidad</th>
+                            <th class="col-md-2">Descuento</th>
+                            <th class="col-md-2">Subtotal</th>
                           </thead>
 
                           <!-- si hay al menos un elemento dentro del array de Detalles-->
@@ -240,23 +257,34 @@ el valor obtenido en esa variable de vue -->
                                 </td>
                                 <!-- capturamos los datos del teclado y enlazamos con el modelo de vue -->
                                 <td v-text="detail.article"></td>
-                                <td><input v-model="detail.price" type="number" class="form-control"></td>
-                                <td><input v-model="detail.quantity" type="number" class="form-control"></td>
-                                <td>${{ detail.price*detail.quantity }}</td> <!--subtotal -->
+                                <td><input v-model="detail.price" type="number" class="form-control" disabled="true"></td>
+                                
+                                <!-- se valida que la cantidad que se ingrese en la tabla, sea menor que el stock -->
+                                <td>
+                                  <span style="color:red;" v-show="detail.quantity > detail.stock"> stock disp: {{ detail.stock }}</span>
+                                  <input v-model="detail.quantity" type="number" class="form-control">
+                                </td>
+                                
+                                <!-- se valida que el descuento  sea mayor al subtotal precio.cantidad -->
+                                <td>
+                                  <span style="color:red;" v-show="detail.discount > (detail.price * detail.quantity)"> descuento invalido</span>
+                                  <input v-model="detail.discount" type="number" class="form-control">
+                                </td>
+                                <td>${{ detail.price*detail.quantity - detail.discount }}</td> <!--subtotal -->
                               </tr>
 
                               <!-- Totales calculados en tiempo real-->
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="4" align="right"><strong> Total Parcial</strong></td>
+                                <td colspan="5" align="right"><strong> Total Parcial</strong></td>
                                 <td>${{ total_parcial= (total-total_tax).toFixed(2) }}</td>
                               </tr>
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="4" align="right"><strong> Total Impuesto</strong></td>
+                                <td colspan="5" align="right"><strong> Total Impuesto</strong></td>
                                 <td>${{ total_tax = ((total*tax)/(1+tax)).toFixed(2) }}</td>
                                 <!-- con toFixed() se redondean los decimales -->
                               </tr>
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="4" align="right"><strong> Total Neto</strong></td>
+                                <td colspan="5" align="right"><strong> Total Neto</strong></td>
                                 <!-- llamamos al metodo computedTotals dentro de la propiedad "Computed" de vue-->
                                 <td>${{total = computedTotals }}</td>
                               </tr>
@@ -265,7 +293,7 @@ el valor obtenido en esa variable de vue -->
                           <!-- Si no hay ningun elemento dentro del array... -->
                           <tbody v-else>
                             <tr>
-                              <td colspan="5">No hay articulos agregados ahora...</td>
+                              <td colspan="6">No hay articulos agregados ahora...</td>
                             </tr>
                           </tbody>
 
@@ -278,22 +306,22 @@ el valor obtenido en esa variable de vue -->
                     <div class="form-group row">
                       <div class="col-md-12">
                         <button type="button" class="btn btn-secondary" @click="hideDetails()">Cerrar</button>
-                        <button type="button" class="btn btn-primary" @click="registrar()">Registrar Compra</button>
+                        <button type="button" class="btn btn-primary" @click="registrar()">Registrar Venta</button>
                       </div>
                     </div>
                   </div>
                 </template>
                 <!-- End Detalles de un ingreso -->
 
-                <!-- Visualizar los detalles de un ingreso registrado al hacer click en el ojito
-                    cuando un ingreso es registrado, se pueden visualizar sus detalles-->
-                <template v-else-if="flag_list_incomes == 2">
+                <!-- Visualizar los detalles de una venta registrada al hacer click en el ojito
+                    cuando una venta es registrada, se pueden visualizar sus detalles-->
+                <template v-else-if="flag_list_sales == 2">
                   <div class="card-body">
                     <div class="row form-group border">
                       <div class="col-md-8">
                         <div class="form-group">
-                          <label>Proveedor</label>
-                          <p v-text="provider_name"></p>
+                          <label>Cliente</label>
+                          <p v-text="client_name"></p>
                         </div>
                       </div>
         
@@ -337,30 +365,32 @@ el valor obtenido en esa variable de vue -->
                             <th>Articulo</th>
                             <th>Precio</th>
                             <th>Cantidad</th>
+                            <th>Descuento</th> 
                             <th>Subtotal</th>
                           </thead>
 
                           <!-- si hay al menos un elemento dentro del array de Detalles muestra cada articulo-->
                           <tbody v-if="arrayDetails.length">
                               <tr v-for="(detail) in arrayDetails" :key="detail.id">
-                                <td v-text="detail.name"></td>
+                                <td v-text="detail.article"></td>
                                 <td v-text="detail.price"></td>
                                 <td v-text="detail.quantity"></td>
-                                <td>${{ detail.price*detail.quantity }}</td> <!--subtotal -->
+                                <td v-text="detail.discount"></td>
+                                <td>${{ detail.price*detail.quantity - detail.discount }}</td> <!--subtotal -->
                               </tr>
 
                               <!-- Totales -->
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="3" align="right"><strong> Total Parcial</strong></td>
+                                <td colspan="4" align="right"><strong> Total Parcial</strong></td>
                                 <td>${{ total_parcial= (total-total_tax).toFixed(2) }}</td>
                               </tr>
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="3" align="right"><strong> Total Impuesto</strong></td>
+                                <td colspan="4" align="right"><strong> Total Impuesto</strong></td>
                                 <td>${{ total_tax = (total*tax).toFixed(2) }}</td>
                                 <!-- con toFixed() se redondean los decimales -->
                               </tr>
                               <tr style="background-color: #CEECF5;">
-                                <td colspan="3" align="right"><strong> Total Neto</strong></td>
+                                <td colspan="4" align="right"><strong> Total Neto</strong></td>
                                 <!-- llamamos al metodo computedTotals dentro de la propiedad "Computed" de vue-->
                                 <td>${{total}}</td>
                               </tr>
@@ -369,7 +399,7 @@ el valor obtenido en esa variable de vue -->
                           <!-- este tbody se mostrara cuando el array de detalles este vacio -->
                           <tbody v-else>
                             <tr>
-                              <td colspan="4">No hay articulos agregados ahora...</td>
+                              <td colspan="5">No hay articulos agregados ahora...</td>
                             </tr>
                           </tbody>
 
@@ -389,8 +419,6 @@ el valor obtenido en esa variable de vue -->
         </div>
         <!-- end container -->
 
-        <!-- Modal para seleccionar uno o más articulos para agregarlos a la compra/ingreso -->
-        <!-- :class="{e se anexara la clase mostrar, si la propiedad modal esta en 1 -->
         <div :class="{'mostrar':modal}" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-primary modal-lg" role="document">
                 <div class="modal-content">
@@ -412,7 +440,7 @@ el valor obtenido en esa variable de vue -->
                             <!-- Se puede buscar un articulo por nombre y codigo -->
                             <select v-model="search_criteria_article" class="form-control col-md-3">
                                 <option value="name">Nombre</option>
-                                <option value="code" selected="true">Código</option>
+                                <option value="code" selected>Código</option>
                             </select>
                             <input v-model="text_search_article" @keyup.enter="listarArticulos(text_search_article,search_criteria_article)" type="text" class="form-control" placeholder="Texto a buscar">
                             <button @click="listarArticulos(text_search_article,search_criteria_article)" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
@@ -429,7 +457,6 @@ el valor obtenido en esa variable de vue -->
                                     <th>Opciones</th>
                                     <th>Codigo</th>
                                     <th>Nombre</th>
-                                    <th>Categoria</th>
                                     <th>Stock</th>
                                     <th>Precio venta</th>
                                     <th>Estado</th>
@@ -440,13 +467,12 @@ el valor obtenido en esa variable de vue -->
                                 <tr v-for="article in arrayArticles" :key="article.id">
                                     <td>
                                       <!-- permite agregar un articulo de esta lista, al detalle de ingreso -->
-                                        <button @click="addArticleToIncome(article)" type="button" class="btn btn-success btn-sm">
+                                        <button @click="addArticleModal(article)" type="button" class="btn btn-success btn-sm">
                                             <i class="icon-check"></i>
                                         </button> &nbsp;
                                     </td>
                                     <td v-text="article.code"></td>
                                     <td v-text="article.name"></td>
-                                    <td v-text="article.category_name"></td>
                                     <td v-text="article.stock"></td>
                                     <td v-text="article.sale_price"></td>
 
@@ -474,8 +500,8 @@ el valor obtenido en esa variable de vue -->
             </div>
             <!--modal-dialog -->
         </div>
-        <!--Fin del modal-->
-    </main>
+  </main>
+       <!-- :class="{e se anexara la clase mostrar, si la propiedad modal esta en 1 -->
 </template>
 
 <script>
@@ -483,16 +509,18 @@ el valor obtenido en esa variable de vue -->
       data(){
         return {
           // Datos de un Ingreso:
-          income_id     : 0,
-          provider_id   : 0,
-          provider_name : '',  
+          sale_id       : 0,
+          client_id     : 0,
+          client_dni    : 0,
+          client_name   : '',  
           user_id       : 0, 
           ticket_type   : 'Factura',
           ticket_serie  : 0, 
           ticket_number : 0,
           date          : '',     
           tax           : 0.18,
-          total         : 0.0,      
+          total         : 0.0,
+          discount      : 0.0,      
           status        : '',
 
           //Datos de un articulo:
@@ -501,11 +529,11 @@ el valor obtenido en esa variable de vue -->
           article       : 0,  // nombre
           quantity      : 0,
           price         : 0,
+          stock         : 0,
             
           // arreglos de datos
           arrayDetails  :[],  //Alamacena los detalles (total y cantidad) de articulos seleccionados para un ingreso/venta
-          arrayIncomes  :[],  //Almacena todas las ventas traidas del controlador para listarse
-          arrayProviders:[],  //Almacena a los proveedores de ventas para poder seleccionar 
+          arraySales  :[],  //Almacena todas las ventas traidas del controlador para listarse
           arrayArticles :[],  //Almacena el, o los articulos encontrados
 
           // Datos para calcular los totales
@@ -532,7 +560,7 @@ el valor obtenido en esa variable de vue -->
           errorMessages :[],
 
           // Controla la visualizacion del listado; 1 = se visualiza, 0 = oculto
-          flag_list_incomes : 1,
+          flag_list_sales : 1,
 
           // objeto para manejar la paginacion de categorias 
           pagination : {   
@@ -581,9 +609,10 @@ el valor obtenido en esa variable de vue -->
         computedTotals: function(){
           var result = 0;
 
-          /* para cada elemento del array de articulos, multiplica el precio por la cantidad*/
+          /* para cada elemento del array de articulos, recorre los subtotales y los acumula 
+           multiplica el precio por la cantidad*/
           for(var i = 0; i< this.arrayDetails.length; i++){
-            result = result + (this.arrayDetails[i].price * this.arrayDetails[i].quantity);
+            result = result + (this.arrayDetails[i].price * this.arrayDetails[i].quantity - this.arrayDetails[i].discount);
           }
           return result;
         }
@@ -594,7 +623,7 @@ el valor obtenido en esa variable de vue -->
         // Permite visualizar todos los Ingresos
         listar(page, text, criteria){
           let me=this;    
-          let url = '/incomes?page=' + page + '&search='+ text + '&criteria='+ criteria;
+          let url = '/sale?page=' + page + '&search='+ text + '&criteria='+ criteria;
 
          // utilizando axios para enviar peticiones http puras
          // utilizando promesas
@@ -603,7 +632,7 @@ el valor obtenido en esa variable de vue -->
               //almacenamos el objeto de la respuesta (la consula a la bd)
               let respuesta = response.data;
               // traemos la data del controlador
-              me.arrayIncomes = respuesta.incomes.data;
+              me.arraySales = respuesta.sales.data;
               me.pagination = respuesta.pagination;
             })
             .catch(function (error) {
@@ -612,11 +641,12 @@ el valor obtenido en esa variable de vue -->
             });
         },
 
-        // Permite listar todos los articulos dentro del modal
+        // Permite listar todos los articulos que esten disponibles para su venta 
+        // dentro del modal
         listarArticulos(text, criteria){
           let me=this;
 
-          let url = '/article?search='+ text + '&criteria='+ criteria;
+          let url = '/article/getArticlesToSale?search='+ text + '&criteria='+ criteria;
           axios.get(url)
             .then(function (response) {
               //almacenamos el objeto de la respuesta (la consula a la bd)
@@ -642,121 +672,13 @@ el valor obtenido en esa variable de vue -->
           return find;
         },
 
-        // agregar un detalle de articulo: Todo lo que el
-        // usuario escriba en los inputs al agregar un articulo, 
-        // se agrega en las variables de vue esto llenará la tabla de detalles de articulo.
-        addDetail(){
-          let me = this;
-
-          if(this.article_id > 0 || this.quantity > 0 || this.price > 0){
-
-            //si el articulo ya esta agregado
-            if(me.search(me.article_id)){
-                swal({
-                  type: 'error',
-                  title: 'Error',
-                  text: 'Este articulo ya se encuentra agregado, para modificarlo por favor, eliminelo de la lista...'
-                })
-            }else{
-              me.arrayDetails.push({
-                article_id: me.article_id,
-                article:  me.article,
-                quantity: me.quantity,
-                price: me.price
-              });
-            }
-
-            // Limpiamos las variables
-            me.code = "";
-            me.article_id = 0;
-            me.quantity = 0;
-            me.article = "";
-            me.price = 0;
-          }
-        },
-
-        // Agrega el articulo seleccionado en el modal, al array de articulos
-        addArticleToIncome(article = []){
-          let me = this;
-
-            //si el articulo ya esta agregado  
-            if(me.search(article['id'])){
-                swal({
-                  type: 'Error',
-                  title: 'Error',
-                  text: 'Este articulo ya se encuentra agregado...'
-                })
-            }else{
-              
-              me.arrayDetails.push({
-                article_id: article['id'],
-                article: article['name'],
-                quantity: 1,
-                price: 1
-              });
-           
-            }
-            me.code = "";
-            me.article_id = 0;
-            me.quantity = 0;
-            me.article = "";
-            me.price = 0;
-        },
-
-        // Elimina un registro (articulo) del array De detalles
-        dropDetail(idx){
-          let me = this;
-          me.arrayDetails.splice(idx,1);
-        },
-
-        // Almacena un ingreso junto a sus detalles en la base de datos
-        registrar(){
-          let me=this;
-
-          if(this.validar())
-            return;
-
-          axios.post('/incomes/store',{
-           
-            'provider_id'   :this.provider_id,
-            'ticket_type'   :this.ticket_type,
-            'ticket_number' :this.ticket_number,
-            'ticket_serie'  :this.ticket_serie,
-            'tax'           :this.tax,
-            'total'         :this.total,
-            'data'          :this.arrayDetails
-
-            }).then(function (response) {
-              me.hideDetails();
-              me.listar(1,'','ticket_number');
-            }).catch(function (error) {
-              console.log(error.response);
-            });
-            
-        },
-
-        selectProvider(){
-          let me=this;
-
-          var url = '/provider/getProviders?filter=name';
-          axios.get(url)
-            .then(function (response) {
-              let respuesta = response.data;
-              // traemos la data del controlador
-              me.arrayProviders = respuesta.providers;
-            })
-            .catch(function (error) {
-              // handle error
-              console.log(error.response);
-            });
-        },
-
-        // Obtiene un articulo, cuando el usuario ingresa su codigo,
-        // al realizar un nuevo ingreso  
+        // busca un articulo por codigo en la base de datos,
+        // cuando el usuario ingresa su codigo y presiona enter
+        // al realizar una nueva venta y lo agrega a arrayArticles  
         getArticle(){
           let me=this;
 
-          var url = '/article/searchArticle?filter='+me.code;
+          var url = '/article/searchArticleStock?filter='+me.code;
           axios.get(url)
             .then(function (response) {
               let respuesta = response.data;
@@ -767,10 +689,14 @@ el valor obtenido en esa variable de vue -->
               if(me.arrayArticles.length > 0){
                 me.article = me.arrayArticles[0]['name'];
                 me.article_id = me.arrayArticles[0]['id'];
+                me.code = me.arrayArticles[0]['code'];
+                me.price = me.arrayArticles[0]['sale_price'];
+                me.stock = me.arrayArticles[0]['stock'];
               }else{
                 //no hay ningun articulo que coincida
-                me.article="No existe el articulo";
+                me.article="Articulo no encontrado";
                 me.article_id="0";
+                me.code="0";
               }
             })
             .catch(function (error) {
@@ -779,15 +705,148 @@ el valor obtenido en esa variable de vue -->
             });
         },
 
+        // Agrega un articulo al arrayArticles que es seleccionado dentro 
+        // del modal 
+        addArticleModal(article = []){
+          let me = this;
+
+            //si el articulo ya esta agregado  
+            if(me.search(article['id'])){
+                swal({
+                  type: 'error',
+                  title: 'Error',
+                  text: 'Este articulo ya se encuentra agregado...'
+                })
+            }else{
+              
+              me.arrayDetails.push({
+                article_id: article['id'],
+                article: article['name'],
+                code: article['code'],
+                quantity: 1,
+                price: article['sale_price'],
+                discount:0,
+                stock: article['stock']
+              });
+            }
+            me.code = "";
+            me.article_id = 0;
+            me.quantity = 0;
+            me.article = "";
+            me.price = 0;
+            me.discount = 0 ;
+            me.stock = 0;
+        },
+
+        // Agrega un articulo seleccionado, al arrayDetails, cuando se
+        // presiona el boton "agregar" decir, crea un nuevo detalle de articulo
+        addDetail(){
+          let me = this;
+
+          if(this.article_id > 0 || this.quantity > 0 || this.price > 0){
+
+            //si el articulo ya esta agregado
+            if(me.search(me.article_id)){
+                swal({
+                  type: 'error',
+                  title: 'Error',
+                  text: '¡Este articulo ya se encuentra agregado!'
+                })
+            }else{
+              // validando que la cantidad de articulo que se agrege al detalle de venta
+              // tenga un stock > 0
+              if(me.quantity > me.stock) {
+                //error
+                swal({
+                  type: 'error',
+                  title: 'Error',
+                  text: '¡No hay suficientes articulos!'
+                })
+              }else{
+                me.arrayDetails.push({
+                  article_id: me.article_id,
+                  code: me.code,
+                  article:  me.article,
+                  quantity: me.quantity,
+                  price: me.price,
+                  discount: me.discount,
+                  stock: me.stock
+
+                });
+              }
+            }
+            // Limpiamos las variables
+            me.code = "";
+            me.article_id = 0;
+            me.quantity = 0;
+            me.article = "";
+            me.price = 0;
+            me.discount = 0;
+            me.stock = 0;
+          }
+        },
+        // Elimina un registro (articulo) del arrayDetails
+        dropDetail(idx){
+          let me = this;
+          me.arrayDetails.splice(idx,1);
+        },
+
+        // Almacena una venta en la base de datos
+        //junto a sus detalles, los detalles son todos los articulos
+        // involucrados y su cantidad y descuentos
+        registrar(){
+          let me=this;
+
+          if(this.validar())
+            return;
+          
+          axios.post('/sale/store',{  
+            'client_id'     :this.client_id,
+            'ticket_type'   :this.ticket_type,
+            'ticket_number' :this.ticket_number,
+            'ticket_serie'  :this.ticket_serie,
+            'tax'           :this.tax,
+            'total'         :this.total,
+            'data'          :this.arrayDetails,
+
+            }).then(function (response) {
+              // con hideDetails() quito el formulario de nueva venta
+              me.hideDetails();
+              me.listar(1,'','ticket_number');
+              //visualizamos el reporte una vez se registre una venta
+              me.loadPDF(response.data.id);
+            }).catch(function (error) {
+              console.log(error.response);
+            });
+            
+        },
+
+        //Busca a un cliente en la base de datos
+        //dado su numero de identificacion
+        selectClient(){
+          let me=this;
+
+          var url = '/client/getClient?doc_number='+ me.client_dni;
+          axios.get(url)
+            .then(function (response) {
+              let respuesta = response.data;
+
+              // traemos la data del controlador
+              me.client_name = respuesta.client[0]['name'];
+              me.client_id = respuesta.client[0]['id'];
+            })
+            .catch(function (error) {
+              // handle error
+              console.log(error.response);
+            });
+        },
+
         abrirModal(){
-  
           this.modal = 1;
           this.modalTitle = "Seleccione uno o varios articulos";
-        
         },
 
         cerrarModal(){
-
           this.modal = 0;
           this.modalTitle = ""; 
           this.arrayArticles = [];
@@ -799,11 +858,16 @@ el valor obtenido en esa variable de vue -->
           this.errorDetection = 0;
           this.errorMessages = [];
 
-          if(this.provider_id == 0) this.errorMessages.push('Seleccione un proveedor');
+          if(this.client_id == 0) this.errorMessages.push('No hay cliente seleccionado');
           if(this.ticket_type == 0) this.errorMessages.push('Seleccione el tipo de comprobante');
           if(!this.ticket_number) this.errorMessages.push('Ingrese el numero de comprobante');
           if(!this.tax) this.errorMessages.push('El impuesto de compra es necesario');
           if(this.arrayDetails.length <= 0) this.errorMessages.push('Debe agregar los articulos de la compra!');
+
+          //Validar que la cantidad de cada articulo sea menor que el stock existente
+          this.arrayDetails.map(function(x){
+            if(x.quantity > x.stock) this.errorMessages.push('¡Hay uno más articulos cuya cantidad supera al stock!');
+          });
 
           if(this.errorMessages.length) this.errorDetection = 1;
           
@@ -813,7 +877,7 @@ el valor obtenido en esa variable de vue -->
         desactivar(id){
           
           swal({
-            title: "¿Deseas anular este Ingreso?",
+            title: "¿Deseas anular este Venta?",
             text: "No podrás deshacer esta opción",
             icon: "warning",
             buttons: true,
@@ -825,17 +889,17 @@ el valor obtenido en esa variable de vue -->
               let me = this;
               // hacemos una peticion http para desactivar la categoria
               
-              axios.put('/incomes/disable',{
+              axios.put('/sale/disable',{
                 'id': id
                 }).then(function (response) {
                   
                   me.listar(1,'','ticket_number');
-                  swal("Ingreso anulado!", {
+                  swal("Venta anulada!", {
                     icon: "success",
                   });
 
                 }).catch(function (error) {
-                  swal("Ha ocurrido un error al desactivar este ingreso",{
+                  swal("Ha ocurrido un error al desactivar la venta",{
                     icon: "error"
                   });
                  console.log(error);
@@ -847,14 +911,17 @@ el valor obtenido en esa variable de vue -->
 
         // Visualiza la tabla de articulos asociados a un ingreso
         visualizeDetails(){
-          this.flag_list_incomes = 0;
-          this.selectProvider();
+          this.flag_list_sales = 0;
         },
         // Oculta la tabla de articulos asociados a un ingreso y resetea las variables
         hideDetails(){
-          this.flag_list_incomes = 1;
-          this.income_id     = 0;
-          this.provider_id   = 0;  
+
+          this.flag_list_sales = 1;
+
+          this.sale_id       = 0,
+          this.client_id     = 0,
+          this.client_dni    = 0,
+          this.client_name   = '',
           this.user_id       = 0; 
           this.ticket_type   = 'Boleta',
           this.ticket_serie  = 0; 
@@ -867,37 +934,40 @@ el valor obtenido en esa variable de vue -->
           this.article       = 0;
           this.quantity      = 0;
           this.price         = 0;
+          this.stock         = 0;
+          this.discount      = 0;
           this.arrayDetails  = [];
         },
 
         // Trae la data que permite visualizar un ingreso y sus detalles 
         // al hacer click en el ojito
-        viewIncome(id){
+        viewSale(id){
 
-          this.flag_list_incomes = 2;
+          this.flag_list_sales = 2;
+
           let me=this;
           //Obtener los datos del ingreso
-          var arrayIncome_temp = [];
-          var url = '/incomes/getHeader?id='+id; 
+          var arraySales_temp = [];
+          var url = '/sale/getHeader?id='+id; 
 
           axios.get(url).then(function (response) {
             let respuesta = response.data;
-            arrayIncome_temp = respuesta.income;
+            arraySales_temp = respuesta.sale;
 
             // Hacemos el llenado de variables de vue
-            me.provider_name  = arrayIncome_temp[0]['name'];
-            me.ticket_type    = arrayIncome_temp[0]['ticket_type'];
-            me.ticket_serie   = arrayIncome_temp[0]['ticket_serie'];
-            me.ticket_number  = arrayIncome_temp[0]['ticket_number'];
-            me.tax            = arrayIncome_temp[0]['tax'];
-            me.total          = arrayIncome_temp[0]['total'] 
+            me.client_name    = arraySales_temp[0]['name'];
+            me.ticket_type    = arraySales_temp[0]['ticket_type'];
+            me.ticket_serie   = arraySales_temp[0]['ticket_serie'];
+            me.ticket_number  = arraySales_temp[0]['ticket_number'];
+            me.tax            = arraySales_temp[0]['tax'];
+            me.total          = arraySales_temp[0]['total'] 
           })
           .catch(function (error) {
             console.log(error.response);
           });
 
           // Segunda peticion, traer la data de los detalles:
-          var url = '/incomes/getDetailsIncome?id='+ id;
+          var url = '/sale/getDetailsSale?id='+ id;
           axios.get(url)
             .then(function (response) {
               let respuesta = response.data;
@@ -914,6 +984,10 @@ el valor obtenido en esa variable de vue -->
           me.pagination.current_page = pageNumber;
           me.listar(pageNumber, text, criteria); 
         },
+
+        loadPDF(id){
+          window.open('http://localhost:8000/sale/pdf/'+ id +','+'_blank');
+        },
       },
 
       mounted(){
@@ -922,8 +996,8 @@ el valor obtenido en esa variable de vue -->
           this.listar(1,this.text_search,this.search_criteria);
           console.log('Component mounted.')
         }
-}    
-</script>
+    }    
+</script> 
 
 <style>
   .modal-content{
@@ -951,4 +1025,3 @@ el valor obtenido en esa variable de vue -->
   }
   
 </style>
-

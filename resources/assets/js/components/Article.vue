@@ -16,6 +16,9 @@
                     <button @click="abrirModal('register')" type="button" class="btn btn-secondary">
                         <i class="icon-plus"></i>&nbsp;Nuevo Articulo
                     </button>
+                    <button @click="loadPDF()" type="button" class="btn btn-info">
+                        <i class="icon-doc"></i>&nbsp; Generar Reporte
+                    </button>
                 </div>
                 
                 
@@ -500,6 +503,10 @@
               });
               console.log(error);
           });
+        },
+
+        loadPDF(){
+          window.open('http://localhost:8000/article/pdf','_blank');
         },
 
         cambiarPagina(pageNumber, text, criteria){

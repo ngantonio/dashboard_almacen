@@ -6,11 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Sistema Ventas Laravel Vue Js- IncanatoIT">
-    <meta name="author" content="Incanatoit.com">
+    <meta name="author" content="Gabriel Antonio">
     <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
     <meta name="csrf-token" content="{{ csrf_token() }}"> 
-    <link rel="shortcut icon" href="img/favicon.png">
-    <title>Administración de Productos</title>
+    <title>Administración de Almacén</title>
     <!-- Icons -->
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/simple-line-icons.min.css" rel="stylesheet">
@@ -29,7 +28,7 @@
             <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
             <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#"></a>
+           
             <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
             <span class="navbar-toggler-icon"></span>
             </button>
@@ -106,11 +105,7 @@
 
     </div>
     <!--fin de vue -->
-
-    <footer class="app-footer">
-        <span class="ml-auto"> Desarrollado por Gabriel Antonio, con plantilla <a href="https://coreui.io/">CoreUI</a> &copy; 2019</span>
-    </footer>
-
+   
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <!-- plugin vue.js -->
     <script src="js/app.js"></script>

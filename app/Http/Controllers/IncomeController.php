@@ -30,6 +30,7 @@ class IncomeController extends Controller
                 ->select('incomes.id',
                 'incomes.ticket_type',
                 'incomes.ticket_serie',
+                'incomes.ticket_number',
                 'incomes.date',
                 'incomes.tax',
                 'incomes.total',
@@ -44,6 +45,7 @@ class IncomeController extends Controller
                 ->select('incomes.id',
                 'incomes.ticket_type',
                 'incomes.ticket_serie',
+                'incomes.ticket_number',
                 'incomes.date',
                 'incomes.tax',
                 'incomes.total',
@@ -51,6 +53,7 @@ class IncomeController extends Controller
                 'users.username as user',
                 'persons.name')              
                 ->where('incomes.'.$search_criteria, 'like', '%'. $text_search . '%')
+                ->orderBy('date','desc')
                 ->paginate(10);
  
          

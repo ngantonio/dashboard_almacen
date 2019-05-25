@@ -6,9 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Panel de adminsitración">
+  <meta name="description" content="Sistema de administración y almacén de compras y ventas">
   <meta name="author" content="Gabriel Antonio">
-  <meta name="keyword" content="Panel de adimistracion de usuarios compras y ventas">
+  <meta name="keyword" content="Sistema de administración y almacén de compras y ventas">
 
   <title>Iniciar Sesión</title>
 
@@ -26,7 +26,6 @@
   <div class="container">
     @yield('login')
   </div>
-
   <!-- Bootstrap and necessary plugins -->
   <script src="js/app.js"></script>
     <!-- Bootstrap and necessary plugins -->

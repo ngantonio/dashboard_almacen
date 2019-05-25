@@ -23,6 +23,8 @@ Vue.component('providers', require('./components/Provider.vue'));
 Vue.component('roles', require('./components/Role.vue'));
 Vue.component('users', require('./components/User.vue'));
 Vue.component('incomes', require('./components/Income.vue'));
+Vue.component('sales', require('./components/Sales.vue'));
+Vue.component('dashboard', require('./components/Dashboard.vue'));
 
 const app = new Vue({
     //App es un identificador

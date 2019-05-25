@@ -24,7 +24,6 @@ Route::group(['middleware'=>['guest']],function(){
 });
 
 
-
 // Autenticacion para usuarios autenticados
 Route::group(['middleware'=>['auth']],function(){
 
@@ -34,81 +33,56 @@ Route::group(['middleware'=>['auth']],function(){
     })->name('main');
 
     Route::post('/logout','Auth\LoginController@logout')->name('logout');
-    
-    // Conjunto de rutas para el warehouser
-    Route::group(['middleware'=>['Warehouser']],function(){
-         
-        // Categorias
-        Route::get('/category', 'CategoryController@index');
-        Route::post('/category/new', 'CategoryController@store');
-        Route::put('/category/update', 'CategoryController@update');
-        Route::put('/category/disable', 'CategoryController@desactivar');
-        Route::put('/category/enable', 'CategoryController@activar');
-        Route::get('/category/active', 'CategoryController@activeCategories');
-        
-        //Articulos
-        Route::get('/article', 'ArticleController@index');
-        Route::post('/article/new', 'ArticleController@store');
-        Route::put('/article/update', 'ArticleController@update');
-        Route::put('/article/disable', 'ArticleController@changeStatus');
-        Route::put('/article/enable', 'ArticleController@changeStatus');
-    
-        // Personas (Proveedores)
-        Route::get('/provider', 'ProviderController@index');
-        Route::post('/provider/new', 'ProviderController@store');
-        Route::put('/provider/update', 'ClientController@update');
-    });
-   
-    Route::group(['middleware'=>['Seller']],function(){
-
-        // Personas (Clientes)
-        Route::get('/client', 'ClientController@index');
-        Route::post('/client/new', 'ClientController@store');
-        Route::put('/client/update', 'ClientController@update');
-
-        //Ventas y consultas por ventas
-    
-    });
+    Route::get('/dashboard','DashboardController');
 
     Route::group(['middleware'=>['Admin']],function(){
         
-        // Categorias
-        Route::get('/category', 'CategoryController@index');
-        Route::post('/category/new', 'CategoryController@store');
-        Route::put('/category/update', 'CategoryController@update');
-        Route::put('/category/disable', 'CategoryController@desactivar');
-        Route::put('/category/enable', 'CategoryController@activar');
-        Route::get('/category/active', 'CategoryController@activeCategories');
+        Route::group(['middleware'=>['Warehouser']],function(){
+            // Categorias
+            Route::get('/category', 'CategoryController@index');
+            Route::post('/category/new', 'CategoryController@store');
+            Route::put('/category/update', 'CategoryController@update');
+            Route::put('/category/disable', 'CategoryController@desactivar');
+            Route::put('/category/enable', 'CategoryController@activar');
+            Route::get('/category/active', 'CategoryController@activeCategories');
+            
+            //Articulos
+            Route::get('/article', 'ArticleController@index');
+            Route::post('/article/new', 'ArticleController@store');
+            Route::put('/article/update', 'ArticleController@update');
+            Route::put('/article/disable', 'ArticleController@changeStatus');
+            Route::put('/article/enable', 'ArticleController@changeStatus');
+            Route::get('/article/searchArticle', 'ArticleController@searchArticle');
+            //Trae un Articulo disponible para la venta
+            Route::get('/article/searchArticleStock', 'ArticleController@searchArticleStock');
+            // Todos los articulos disponibles para la venta getArticlesToSale
+            Route::get('/article/getArticlesToSale', 'ArticleController@getArticlesToSale'); 
+            //Ruta par generar el pdf de articulos
+            Route::get('/article/pdf', 'ArticleController@listPDF')->name('articulos.pdf');
         
-        //Articulos
-        Route::get('/article', 'ArticleController@index');
-        Route::post('/article/new', 'ArticleController@store');
-        Route::put('/article/update', 'ArticleController@update');
-        Route::put('/article/disable', 'ArticleController@changeStatus');
-        Route::put('/article/enable', 'ArticleController@changeStatus');
-    
-        // Personas (Proveedores)
-        Route::get('/provider', 'ProviderController@index');
-        Route::post('/provider/new', 'ProviderController@store');
-        Route::put('/provider/update', 'ClientController@update');
+            // Personas (Proveedores)
+            Route::get('/provider', 'ProviderController@index');
+            Route::post('/provider/new', 'ProviderController@store');
+            Route::put('/provider/update', 'ClientController@update');
+            Route::get('/provider/getProviders', 'ProviderController@getProviders');
+        });
 
+        Route::group(['middleware'=>['Seller']],function(){
+            // Personas (Clientes)
+            Route::get('/client', 'ClientController@index');
+            Route::post('/client/new', 'ClientController@store');
+            Route::put('/client/update', 'ClientController@update');
+            Route::get('/client/getClient', 'ClientController@getClient'); #Obtiene un cliente dado su numero de documento
         
-        // Personas (Clientes)
-        Route::get('/client', 'ClientController@index');
-        Route::post('/client/new', 'ClientController@store');
-        Route::put('/client/update', 'ClientController@update');
-    
-        //Articulos
-        Route::get('/article', 'ArticleController@index');
-        Route::post('/article/new', 'ArticleController@store');
-        Route::put('/article/update', 'ArticleController@update');
-        Route::put('/article/disable', 'ArticleController@changeStatus');
-        Route::put('/article/enable', 'ArticleController@changeStatus');
-    
-        // Personas (Proveedores)
-        Route::get('/provider', 'ProviderController@index');
-        Route::post('/provider/new', 'ProviderController@store');
-        Route::put('/provider/update', 'ClientController@update');
+            // Ventas
+            Route::get('/sale', 'SalesController@index');
+            Route::get('/sale/getHeader', 'SalesController@getHeader');
+            Route::get('/sale/getDetailsSale', 'SalesController@getDetailsSale');
+            Route::post('/sale/store', 'SalesController@store');
+            Route::put('/sale/disable', 'SalesController@changeStatus');
+            Route::get('/sale/pdf/{id}', 'SalesController@generatePDF');
+
+        });
     
         // Roles
         Route::get('/role', 'RoleController@index');
@@ -128,14 +102,6 @@ Route::group(['middleware'=>['auth']],function(){
         Route::get('/incomes/getHeader', 'IncomeController@getHeader');
         Route::get('/incomes/getDetailsIncome', 'IncomeController@getDetailsIncome');
 
-        #Agregar esta ruta a todas las coincidencias donde aparezca Proveedor
-        Route::get('/provider/getProviders', 'ProviderController@getProviders');
-
-        #Agregar esta ruta en la parte de Articulos
-        Route::get('/article/searchArticle', 'ArticleController@searchArticle');
-
-
     });
-
 });
 
