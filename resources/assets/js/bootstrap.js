@@ -49,7 +49,7 @@ if (token) {
 
  window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 'your-pusher-key',
-    cluster: 'mt1',
+    key: '6bf5915e12726ba1e59b',    
+    cluster: 'us2',
     encrypted: true
 });

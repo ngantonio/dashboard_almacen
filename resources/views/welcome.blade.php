@@ -9,6 +9,10 @@
     <meta name="author" content="Gabriel Antonio">
     <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
     <meta name="csrf-token" content="{{ csrf_token() }}"> 
+
+    <!-- Tag meta para obtener el Id de usuario -->
+    <meta name="userId" content="{{ Auth::check() ? Auth::user()->id : ''}}">  
+
     <title>Administración de Almacén</title>
     <!-- Icons -->
     <link href="css/font-awesome.min.css" rel="stylesheet">
@@ -41,25 +45,13 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item d-md-down-none">
-                    <a class="nav-link" href="#" data-toggle="dropdown">
-                        <i class="icon-bell"></i>
-                        <span class="badge badge-pill badge-danger">5</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <div class="dropdown-header text-center">
-                            <strong>Notificaciones</strong>
-                        </div>
-                        <a class="dropdown-item" href="#">
-                            <i class="fa fa-envelope-o"></i> Ingresos
-                            <span class="badge badge-success">3</span>
-                        </a>
-                        <a class="dropdown-item" href="#">
-                            <i class="fa fa-tasks"></i> Ventas
-                            <span class="badge badge-danger">2</span>
-                        </a>
-                    </div>
-                </li>
+                
+                <!-- Notificaciones aqui -->
+                <!-- enviamos como parametro (o propiedad), al arreglo de notificaciones
+                el parametro  "notifications", va a ser igual al arreglo notifications 
+                definido en app.js -->
+                <notification :notifications="notifications"></notification>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                         <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">

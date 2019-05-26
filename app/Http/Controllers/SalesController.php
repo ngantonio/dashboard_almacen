@@ -8,6 +8,8 @@ use Carbon\Carbon;
 
 use App\Sale;
 use App\SaleDetail;
+use App\User;
+use App\Notifications\NotifyAdmin;
 
 class SalesController extends Controller
 {
@@ -113,6 +115,8 @@ class SalesController extends Controller
 
                 $saleDetail->save();
             }
+
+            $this->sendNotification();
             DB::commit();
             return ['id' => $sale->id]; 
          }
@@ -209,5 +213,30 @@ class SalesController extends Controller
         //return ['sale' => $sale, 'id' => $id];
         
     }
+
+    // Permite generar la notificación una vez se almacena una compra / ingreso
+    public function sendNotification(){
+    
+        // para que permita mostrar el total de compras y ventas solo de un dia especifico, el dia actual
+        $current_date = date('Y-m-d');
+        $num_incomes = DB::table('incomes')->whereDate('date',$current_date)->count();
+        $num_sales = DB::table('sales')->whereDate('date',$current_date)->count();
+    
+        $arrayData = [
+            'sales' => [
+                'cantidad' => $num_sales,
+                'msj'      => 'Ventas'
+            ],
+            'incomes' => [
+                'cantidad' => $num_incomes,
+                'msj'      => 'Ingresos'
+            ]
+        ];
+
+        //Notificar a todos los usuarios con click en el sistema
+        $allUsers = User::all();
+        foreach ($allUsers as $user)
+            User::findOrFail($user->id)->notify( new NotifyAdmin($arrayData));   
+    }  
 
 }

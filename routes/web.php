@@ -34,6 +34,8 @@ Route::group(['middleware'=>['auth']],function(){
 
     Route::post('/logout','Auth\LoginController@logout')->name('logout');
     Route::get('/dashboard','DashboardController');
+    // Ruta para obtener las notificaiones 
+    Route::post('notification/get','NotificationController@get');
 
     Route::group(['middleware'=>['Admin']],function(){
         
