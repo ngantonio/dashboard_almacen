@@ -138,8 +138,4 @@ de la aplicación.
 * Implementación de un sistema de notificaciones básico por broadcast con laravel Echo y su aparición en tiempo real con pusher.
 
 
-Las habilidades más básicas fueron adquiridas en la realización del siguiente proyecto: https://github.com/ngantonio/shoppingMarket .
-
-
- *Desarrollado en Laravel v-5.7, Sistema Operativo Debian Stretch*.
-README.markdown elaborado por Gabriel Antonio.
+Las habilidades más básicas fueron adquiridas en la realización del siguiente proyecto: https://github.com/ngantonio/shoppingMarket 
